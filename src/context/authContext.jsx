@@ -20,6 +20,8 @@ export const INITIAL_AUTHSTATE = {
     setIsAuthenticated: () => { },
     isLoading: false,
     checkAuthUser: async () => false,
+    isLoginOpen:false,
+    setIsLoginOpen:()=>{}
 };
 
 const authContext = createContext(INITIAL_AUTHSTATE);
@@ -28,7 +30,11 @@ const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(INITIAL_USER);
     const [isLoading, setIsLoading] = useState(false);
     const [isAuthenticated, setIsAuthenticated] = useState(undefined);
+    const [isLoginOpen,setIsLoginOpen] = useState(false);
 
+    const openLogin = ()=>{
+        setIsLoginOpen(!isLoginOpen)
+    }
     const checkAuthUser = async () => {
         try {
             const currentUser = await getCurrentUser();
@@ -70,7 +76,9 @@ const AuthProvider = ({ children }) => {
 
         checkAuthUser();
     }, []); // Add navigate to useEffect dependencies
-
+useEffect(()=>{
+    console.log(isLoginOpen,"is dfdfsdf mmeee")
+},[isLoginOpen])
     const value = {
         user,
         setUser,
@@ -78,6 +86,8 @@ const AuthProvider = ({ children }) => {
         isAuthenticated,
         setIsAuthenticated,
         checkAuthUser,
+        isLoginOpen,
+        setIsLoginOpen
     };
 
     return <authContext.Provider value={value}>{children}</authContext.Provider>;

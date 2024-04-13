@@ -28,21 +28,30 @@ const ImageSchema = z.object({
 });
 
 const postSchema = z.object({
-  tags: z.string().min(1,{message:"Minimum 1 tag is required"}),
-  
-  caption: z.string().min(5,{message:"please enter specific caption !"}),
-  desc: z.string().min(2,{message:"Please enter specific post description !"}).max(530,"Description Is Too Large !"),
+  tags: z.string().min(1, { message: "Minimum 1 tag is required" }),
+
+  caption: z.string().min(5, { message: "please enter specific caption !" }),
+  desc: z.string().min(2, { message: "Please enter specific post description !" }).max(530, "Description Is Too Large !"),
   // budget: z.string().min(1,"please enter the budget to build this setup !"),
   // productLinks: z.string(),
 });
-const commentSchema= z.object({
-  comment:z.string().min(1,{
-    message:"Please Enter Your Comment"
+const commentSchema = z.object({
+  comment: z.string().min(1, {
+    message: "Please Enter Your Comment"
+  })
+})
+
+const repostSchema = z.object({
+  caption: z.string().min(1, {
+    message: "Please Enter Caption !"
+  }).max(2000, {
+    message: "Caption is Too Large !"
   })
 })
 export {
   logInSchema,
   signInSchema,
   postSchema,
-  commentSchema
+  commentSchema,
+  repostSchema
 }

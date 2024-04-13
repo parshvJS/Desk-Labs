@@ -79,7 +79,7 @@ import {
 
 const Topbar = () => {
     const { pathname } = useLocation();
-    const { isAuthenticated, checkAuthUser, user, setIsAuthenticated } = useUserContext()
+    const { isAuthenticated, checkAuthUser, user, setIsAuthenticated,isLoginOpen,setIsLoginOpen } = useUserContext()
     const { toast } = useToast()
     const [loading, setLoading] = useState(false)
     const accountBtn = [
@@ -237,7 +237,6 @@ const Topbar = () => {
                                     <div className='flex justify-center mr-2 gap-3'>
                                         {circleButton.map(btn => {
                                             const isActive = pathname === btn.route;
-                                            console.log(btn);
                                             return (
                                                 <TooltipProvider delayDuration={75}>
                                                     <Tooltip>
@@ -294,11 +293,11 @@ const Topbar = () => {
                                 <div className='md:block hidden'>
 
                                     <div className='gap-2 flex '>
-                                        <Dialog >
+                                        <Dialog open={isLoginOpen} onOpenChange={()=>{ setIsLoginOpen(!isLoginOpen)}} className="w-[90%] md:w-auto">
                                             <DialogTrigger asChild>
                                                 <Button className="bg-transparent  hover:bg-pri-100 text-pri-400">Login</Button>
                                             </DialogTrigger>
-                                            <DialogContent className="sm:max-w-[425px] w-[30%]">
+                                            <DialogContent className="sm:max-w-[425px] w-[90%] md:w-[30%]">
                                                 <DialogHeader>
                                                     <DialogTitle><p className='text-xl font-semibold text-pri-550'>Log In To Your Account</p></DialogTitle>
                                                 </DialogHeader>

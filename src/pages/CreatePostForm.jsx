@@ -31,12 +31,14 @@ import { Textarea } from "@/components/ui/textarea"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import Loader from "@/myComponents/Loader";
 import { createNewPost } from "@/utils/api.js";
+import { useUserContext } from "@/context/authContext";
 
 function CreatePostForm() {
   const [files, setFiles] = useState([]);
   const [isFileError, setIsFileError] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [totalSize, setTotalSize] = useState(0);
+  const {user} = useUserContext()
   const form = useForm({
     resolver: zodResolver(postSchema)
   });
@@ -61,7 +63,7 @@ function CreatePostForm() {
       });
   
       // Upload files to the server
-      const response = await axios.post("http://localhost:8000/api/v1/uploader/upload", formData);
+      const response = await axios.post("https://desk-labs-backene.onrender.com/api/v1/uploader/upload", formData);
   
       // Process response to get image URLs and IDs
       response.data.imageUrl.forEach(data => {
@@ -76,8 +78,9 @@ function CreatePostForm() {
         caption: data.caption,
         desc: data.desc,
         tags: data.tags,
-        imageId: fileId, // Pass fileId instead of imageId
-        imageUrl: fileUrl // Pass fileUrl instead of imageUrl
+        imageId: fileId, 
+        imageUrl: fileUrl,
+        userId:user.id
       });
   
       console.log("New post created:", post);

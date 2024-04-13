@@ -11,6 +11,7 @@ import CreatePostForm from './pages/CreatePostForm';
 import Profile from './pages/Profile';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import PostDetail from './myComponents/PostDetail';
+import Reposts from './pages/Reposts';
 
 function App() {
   const queryClient = new QueryClient()
@@ -25,7 +26,7 @@ function App() {
         <Route path='/user/sign-in' element={<SignIn />} /> */}
             <Route element={<Root_layout />} >
               <Route path="/" index element={<Main />} />
-              <Route path="/post" element={<Posts />} />
+              <Route path="/post" element={<Reposts />} />
               <Route path="/post/:id/:caption" element={<PostDetail />} />
               <Route path="/inspired" element={<GetIns />} />
               <Route path="/create-new-post" element={<CreatePostForm />} />

@@ -19,7 +19,9 @@ const buttonVariants = cva(
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
         pri:"bg-pri-400 text-white dark:text-black hover:bg-pri-300",
-        commentBtn:"bg-pri-300 text-white"
+        commentBtn:"bg-pri-300 text-white",
+        follow:"bg-pri-300 text-white rounded-full",
+        followed:"bg-gray-200 rounded-full"
       },
       size: {
         default: "h-10 px-4 py-2",
