@@ -201,20 +201,24 @@ const Reposts = () => {
               <p className='text-2xl font-bold mb-3'>Who to follow</p>
               <div className='flex gap-2 flex-col'>
                 {peopleData.message.map((people, index) => (
-                  <div key={index} className='flex gap-2 items-center'>
-                    <Avatar>
-                      <AvatarImage src={people.imageUrl} />
-                      <AvatarFallback>VC</AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <p className='text-md font-medium'>{people.name.length > 15 ? people.name.slice(0, 12) + "..." : people.name}</p>
-                      <p className='text-sm'>{people.followers.length} Followers</p>
+                  <div key={index} className='flex gap-2 items-center justify-between'>
+                    <div className='flex gap-2'>
+                      <Avatar>
+                        <AvatarImage src={people.imageUrl} />
+                        <AvatarFallback>VC</AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <p className='text-md font-medium'>{people.name.length > 15 ? people.name.slice(0, 12) + "..." : people.name}</p>
+                        <p className='text-sm'>{people.followers.length} Followers</p>
+                      </div>
                     </div>
                     <Button
-                      onClick={() => handleFollow(people,index)}
+                      onClick={() => handleFollow(people, index)}
+                      className="h-8 w-fit"
                       variant={people.followers.includes(user.id) ? "followed" : "follow"}>
                       <Button
-                        onClick={() => handleFollow(people,index)}
+                        className="h-8 w-fit"
+                        onClick={() => handleFollow(people, index)}
                         variant={people.followers.includes(user.id) ? "followed" : "follow"}>
                         {isFollowLoading === index ? (
                           <Loader />
