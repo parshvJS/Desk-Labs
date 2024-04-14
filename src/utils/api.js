@@ -18,7 +18,6 @@ export async function getCurrentUser() {
         return currentUser.documents[0];
 
     } catch (error) {
-        console.log(error)
     }
 }
 
@@ -39,7 +38,6 @@ export async function createNewUser(user) {
 
         return dbUser;
     } catch (error) {
-        console.log('createNewUser :: error : ', error);
         return error
     }
 }
@@ -56,7 +54,6 @@ export async function saveUserToDb(user) {
         )
         return storeInDbUser
     } catch (error) {
-        console.log(error)
     }
 }
 
@@ -67,7 +64,6 @@ export async function signInAccount(user) {
         return session;
 
     } catch (error) {
-        console.log(error)
         return error;
     }
 }
@@ -77,7 +73,7 @@ export async function checkForCurrentUser() {
         const userDetails = await account.get()
         return userDetails
     } catch (error) {
-        console.log(error)
+        throw new Error(error.message)
     }
 }
 
@@ -87,14 +83,12 @@ export async function signOutAccount() {
         return session;
     } catch (error) {
         // Log the error details
-        console.error('Error signing out:', error);
-
+        throw new Error(error.message)
     }
 }
 
 export async function createNewPost({ caption, desc, tags, imageId, imageUrl, userId }) {
     try {
-        console.log("i am getiing upload", { caption, imageUrl });
         const post = await databases.createDocument(
             appwriteConfig.databaseId,
             appwriteConfig.post_bucketId,
@@ -111,10 +105,8 @@ export async function createNewPost({ caption, desc, tags, imageId, imageUrl, us
         if (!post) {
             throw new Error("Something went wrong while creating the post");
         }
-        console.log(post);
         return post; // Return the created post
     } catch (error) {
-        console.error("Error creating new post:", error.message);
         throw new Error(error.message);
     }
 }
@@ -154,7 +146,6 @@ export async function getPostComments(postId) {
             });
         }
 
-        console.log(commentsWithUserDetails, "is comment for this post");
         return commentsWithUserDetails;
     } catch (error) {
         throw new Error(error.message);
@@ -169,18 +160,15 @@ export async function getUserDetails(id) {
             appwriteConfig.user_bucketId,
             id,
             [
-                Query.select(["$id", "imageUrl", "name", "followers"])
+                Query.select(["$id", "imageUrl", "name", "followers","$createdAt"])
             ]
         );
         if (!user || user.code >= 400 || user.message) {
-            console.error("Error fetching user details:", user.message);
             throw new Error("User details not found");
         } else {
-            console.log("User details retrieved successfully:", user);
             return user;
         }
     } catch (error) {
-        console.error("Error fetching user details:", error);
         throw new Error("Failed to fetch user details");
     }
 }
@@ -198,7 +186,6 @@ export async function getFeed() {
             ]
         )
         if (!allPost) return -1
-        console.log(allPost, "asdasd");
         return allPost
     } catch (error) {
         throw new Error(error.message)
@@ -264,73 +251,60 @@ export async function getLimitedPostDetails(documentId) {
 
 export const likePost = async (documentId, user) => {
     try {
-        console.log(documentId, user, "is liking");
 
         // Fetch the document
         const document = await databases.getDocument(appwriteConfig.databaseId, appwriteConfig.post_bucketId, documentId);
 
-        console.log(documentId, user, document, "is liking 1");
 
         // Ensure that the 'likes' attribute exists and is an array
         if (!Array.isArray(document.likes)) {
             document.likes = [];
         }
 
-        console.log(documentId, user, "is liking 2");
 
         // Push the user into the 'likes' array
         document.likes.push(user);
 
-        console.log(documentId, user, document, "is liking 2");
 
         // Update the document with the modified 'likes' array
         const response = await databases.updateDocument(appwriteConfig.databaseId, appwriteConfig.post_bucketId, documentId, {
             likes: document.likes
         });
 
-        console.log('User pushed into array attribute successfully:', response);
-        console.log(documentId, user, "is liking 3");
     } catch (error) {
-        console.error('Error pushing user into array attribute:', error);
+        throw new Error(error.message)
     }
 };
 export const dislikePost = async (documentId, user) => {
     try {
-        console.log(documentId, user, "is dliking");
 
         // Fetch the document
         const document = await databases.getDocument(appwriteConfig.databaseId, appwriteConfig.post_bucketId, documentId);
 
-        console.log(documentId, user, document, "is dliking 1");
 
         // Ensure that the 'likes' attribute exists and is an array
         if (!Array.isArray(document.likes)) {
             document.likes = [];
         }
 
-        console.log(documentId, user, "is dliking 2");
 
         // Push the user into the 'likes' array
         document.likes.pop(user);
 
-        console.log(documentId, user, document, "is dliking 2");
 
         // Update the document with the modified 'likes' array
         const response = await databases.updateDocument(appwriteConfig.databaseId, appwriteConfig.post_bucketId, documentId, {
             likes: document.likes // Only send the updated 'likes' array
         });
 
-        console.log('User poped into array attribute successfully:', response);
-        console.log(documentId, user, "is dliking 3");
     } catch (error) {
-        console.error('Error pushing user into array attribute:', error);
+        throw new Error(error.message)
     }
 };
 
 
 export async function userWantToFollow(userId, profileId) {
     try {
-        console.log("Fetching profile details...", userId, profileId);
         const profileDetails = await databases.getDocument(
             appwriteConfig.databaseId,
             appwriteConfig.user_bucketId,
@@ -338,18 +312,15 @@ export async function userWantToFollow(userId, profileId) {
         );
 
         if (!profileDetails || profileDetails.code >= 400 || profileDetails.message) {
-            console.log("Error fetching profile details:", profileDetails);
             return {
                 success: false,
                 message: profileDetails.message
             };
         }
 
-        console.log("Profile details fetched:", profileDetails);
 
         profileDetails.followers.push(userId);
 
-        console.log("Updating profile followers...");
         const updateFollowers = await databases.updateDocument(
             appwriteConfig.databaseId,
             appwriteConfig.user_bucketId,
@@ -360,14 +331,12 @@ export async function userWantToFollow(userId, profileId) {
         );
 
         if (!updateFollowers || updateFollowers.code >= 400 || updateFollowers.message) {
-            console.log("Error updating profile followers:", updateFollowers);
             return {
                 success: false,
                 message: updateFollowers.message
             };
         }
 
-        console.log("Profile followers updated:", updateFollowers);
 
         const userDetails = await databases.getDocument(
             appwriteConfig.databaseId,
@@ -376,18 +345,15 @@ export async function userWantToFollow(userId, profileId) {
         );
 
         if (!userDetails || userDetails.code >= 400 || userDetails.message) {
-            console.log("Error fetching user details:", userDetails);
             return {
                 success: false,
                 message: userDetails.message
             };
         }
 
-        console.log("User details fetched:", userDetails);
 
         userDetails.following.push(userId);
 
-        console.log("Updating user following...");
         const updateUserFollowing = await databases.updateDocument(
             appwriteConfig.databaseId,
             appwriteConfig.user_bucketId,
@@ -398,27 +364,23 @@ export async function userWantToFollow(userId, profileId) {
         );
 
         if (!updateUserFollowing || updateUserFollowing.code >= 400 || updateUserFollowing.message) {
-            console.log("Error updating user following:", updateUserFollowing);
             return {
                 success: false,
                 message: updateUserFollowing.message
             };
         }
 
-        console.log("User following updated:", updateUserFollowing);
 
         return {
             success: true
         };
 
     } catch (error) {
-        console.error("Error in userWantToFollow:", error);
         throw new Error(error.message);
     }
 }
 export async function userWantToUnfollow(userId, profileId) {
     try {
-        console.log("Fetching profile details...", userId, profileId);
         const profileDetails = await databases.getDocument(
             appwriteConfig.databaseId,
             appwriteConfig.user_bucketId,
@@ -426,18 +388,15 @@ export async function userWantToUnfollow(userId, profileId) {
         );
 
         if (!profileDetails || profileDetails.code >= 400 || profileDetails.message) {
-            console.log("Error fetching profile details:", profileDetails);
             return {
                 success: false,
                 message: profileDetails.message
             };
         }
 
-        console.log("Profile details fetched:", profileDetails);
 
         profileDetails.followers.pop(userId);
 
-        console.log("Updating profile followers...");
         const updateFollowers = await databases.updateDocument(
             appwriteConfig.databaseId,
             appwriteConfig.user_bucketId,
@@ -448,14 +407,12 @@ export async function userWantToUnfollow(userId, profileId) {
         );
 
         if (!updateFollowers || updateFollowers.code >= 400 || updateFollowers.message) {
-            console.log("Error updating profile followers:", updateFollowers);
             return {
                 success: false,
                 message: updateFollowers.message
             };
         }
 
-        console.log("Profile followers updated:", updateFollowers);
 
         const userDetails = await databases.getDocument(
             appwriteConfig.databaseId,
@@ -464,18 +421,15 @@ export async function userWantToUnfollow(userId, profileId) {
         );
 
         if (!userDetails || userDetails.code >= 400 || userDetails.message) {
-            console.log("Error fetching user details:", userDetails);
             return {
                 success: false,
                 message: userDetails.message
             };
         }
 
-        console.log("User details fetched:", userDetails);
 
         userDetails.following.pop(userId);
 
-        console.log("Updating user following...");
         const updateUserFollowing = await databases.updateDocument(
             appwriteConfig.databaseId,
             appwriteConfig.user_bucketId,
@@ -486,21 +440,18 @@ export async function userWantToUnfollow(userId, profileId) {
         );
 
         if (!updateUserFollowing || updateUserFollowing.code >= 400 || updateUserFollowing.message) {
-            console.log("Error updating user following:", updateUserFollowing);
             return {
                 success: false,
                 message: updateUserFollowing.message
             };
         }
 
-        console.log("User following updated:", updateUserFollowing);
 
         return {
             success: true
         };
 
     } catch (error) {
-        console.error("Error in userWantToFollow:", error);
         throw new Error(error.message);
     }
 }
@@ -537,7 +488,7 @@ export async function makePostComment(postId, userId, content) {
     }
 }
 
-export async function createRepost(postId, caption) {
+export async function createRepost(postId, caption, userId) {
     try {
         const repost = await databases.createDocument(
             appwriteConfig.databaseId,
@@ -545,7 +496,8 @@ export async function createRepost(postId, caption) {
             ID.unique(),
             {
                 postId: postId,
-                caption: caption
+                caption: caption,
+                reposterId: userId
             }
         )
         if (!repost || repost.code >= 400 || repost.message) {
@@ -554,7 +506,6 @@ export async function createRepost(postId, caption) {
                 message: repost.message
             }
         }
-        console.log(repost);
         return {
             success: true,
             data: repost
@@ -582,27 +533,29 @@ export async function getRepostFeed() {
                 success: false,
                 message: feed.message
             }
-        }
-        else {
-            feed.documents?.forEach(async post => {
+        } else {
+            const posts = await Promise.all(feed.documents.map(async post => {
                 const postOfIt = await getLimitedPostDetails(post.postId)
-                if (postOfIt.data.userId) {
-                    const userOfIt = await getUserDetails(postOfIt.data.userId)
-                    post.owner = userOfIt
-                }
-                post.originalPost = postOfIt.data
-            });
-            console.log(feed, "udfsdfsdfpppppppp");
+                const userOfIt = await getUserDetails(postOfIt.data.userId)
+                post.owner = userOfIt
 
+                const reposterOfIt = await getUserDetails(post.reposterId)
+                post.reposter = reposterOfIt
+
+                post.originalPost = postOfIt.data
+                return post
+            }));
+            console.log(posts, "is repost");
             return {
                 success: true,
-                message: feed
+                message: posts
             }
         }
     } catch (error) {
         throw new Error(error.message)
     }
 }
+
 
 export async function getPeopleList() {
     try {
@@ -621,9 +574,10 @@ export async function getPeopleList() {
             }
         }
         else {
+            console.log(people);
             return {
                 success: true,
-                message: people
+                message: people.documents
             }
         }
     } catch (error) {

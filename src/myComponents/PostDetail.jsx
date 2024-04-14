@@ -90,7 +90,7 @@ const PostDetail = () => {
     async function handleRepostForm(values) {
         try {
             setIsLoading(true)
-            const makeRepost = await createRepost(id, values.caption);
+            const makeRepost = await createRepost(id, values.caption,user.id);
             if (!makeRepost.success) {
                 toast({
                     title: "Error While Reposting !",
@@ -155,19 +155,16 @@ const PostDetail = () => {
 
     async function getPostUser(userId) {
         try {
-            console.log("callerd");
             const user = await getUserDetails(userId);
-            console.log("callerd 1 ", user);
             if (user === -1) {
                 setIsUserAvail(false);
             } else {
                 setIsUserAvail(true)
                 setPostUserData(user);
             }
-            console.log(user, "is here");
         } catch (error) {
+            throw new Error(error.message)
             // Handle error fetching user details
-            console.error("Error fetching user details:", error);
         }
     }
     async function handleFollow() {
@@ -201,7 +198,6 @@ const PostDetail = () => {
             }
         } catch (error) {
             // Handle errors
-            console.error("Error following user:", error);
             toast({
                 title: "Error Following User",
                 description: error.message,
@@ -236,7 +232,6 @@ const PostDetail = () => {
             setBtnLoading(false);
             form.reset()
         }
-        console.log(values);
     }
 
     return (
@@ -374,9 +369,7 @@ const PostDetail = () => {
                                         </Dialog>
 
                                     </div>
-                                    {
-                                        console.log(postDetails)
-                                    }
+                                 
                                     <button onClick={isLiked || postDetails.likes.includes(user.id) ?()=>{setIsLiked(false);dislikePost(id,user.id) }: ()=>{setIsLiked(true);likePost(id,user.id)}} className='flex gap-2 w-24 h-fit p-2 justify-center items-center '>
                                         <img src={isLiked || postDetails.likes.includes(user.id) ? liked : like } className="w-5 h-5" alt="repost" />
                                         <p className='text-base font-semibold'>{isLiked || postDetails.likes.includes(user.id)? "liked" : "like" }</p>

@@ -71,7 +71,6 @@ function CreatePostForm() {
         fileId.push(data.id);
       });
   
-      console.log(fileUrl, fileId, "is in f");
   
       // Call createNewPost with the extracted data
       const post = await createNewPost({
@@ -83,10 +82,8 @@ function CreatePostForm() {
         userId:user.id
       });
   
-      console.log("New post created:", post);
     } catch (error) {
-      console.error("Error handling image upload:", error);
-      // Handle the error here
+      throw new Error(error.message)      // Handle the error here
     } finally {
       form.reset()
       setIsLoading(false);

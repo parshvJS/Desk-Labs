@@ -143,7 +143,6 @@ const Topbar = () => {
             else {
                 checkAuthUser()
             }
-            console.log(loggedInUser, "is me now");
         } catch (error) {
             throw error.message
         }
@@ -582,7 +581,6 @@ const Topbar = () => {
                                                         <div className='flex flex-col gap-1'>
                                                             {
                                                                 accountBtn.map(btn => {
-                                                                    console.log(btn.isOpr)
                                                                     let isActive = pathname === btn.route;
                                                                     if (btn.isOpr) {
                                                                         return <button onClick={handleLogOut} key={btn.label} variant="ghost" className="w-fit text-left">

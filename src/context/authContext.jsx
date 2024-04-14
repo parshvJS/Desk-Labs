@@ -54,10 +54,8 @@ const AuthProvider = ({ children }) => {
                 setIsAuthenticated(true);
                 return true;
             }
-            console.log(currentUser,"is me in context");
             return false;
         } catch (error) {
-            console.log(error);
             return false;
         } finally {
             setIsLoading(false);
@@ -77,7 +75,7 @@ const AuthProvider = ({ children }) => {
         checkAuthUser();
     }, []); // Add navigate to useEffect dependencies
 useEffect(()=>{
-    console.log(isLoginOpen,"is dfdfsdf mmeee")
+    
 },[isLoginOpen])
     const value = {
         user,

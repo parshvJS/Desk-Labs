@@ -42,6 +42,23 @@ export function formatNumber(number) {
     return shortValue + suffix;
 }
 
+export function formatTimestamp(timestamp) {
+    const currentDate = new Date();
+    const postDate = new Date(timestamp);
+
+    const timeDifference = currentDate - postDate;
+    const hoursDifference = Math.floor(timeDifference / (1000 * 60 * 60));
+
+    if (hoursDifference < 1) {
+        return 'Just now';
+    } else if (hoursDifference < 24) {
+        return `${hoursDifference} hour${hoursDifference > 1 ? 's' : ''} ago`;
+    } else {
+        // Format the date as 'DD Month' (e.g., '14 Apr')
+        const options = { day: 'numeric', month: 'short' };
+        return postDate.toLocaleDateString('en-US', options);
+    }
+}
 
 
 
